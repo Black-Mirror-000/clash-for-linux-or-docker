@@ -5,15 +5,23 @@
 - 默认安装 `mihomo` 内核，[可选安装](https://github.com/nelvko/clash-for-linux-install/wiki/FAQ#%E5%AE%89%E8%A3%85-clash-%E5%86%85%E6%A0%B8) `clash`。
 - 自动进行本地订阅转换。
 - 多架构支持，适配主流 `Linux` 发行版：`CentOS 7.6`、`Debian 12`、`Ubuntu 24.04.1 LTS`。
+- **新增Docker容器支持**，无需systemd也能运行。
 
-## 快速开始
+> 如遇问题，请在查阅[常见问题](https://github.com/nelvko/clash-for-linux-install/wiki/FAQ)及 [issue](https://github.com/nelvko/clash-for-linux-install/issues?q=is%3Aissue) 未果后进行反馈。
 
-### 环境要求
+- 上述克隆命令使用了[加速前缀](https://gh-proxy.com/)，如失效请更换其他[可用链接](https://ghproxy.link/)。
+- 默认通过远程订阅获取配置进行安装，本地配置安装详见：[issue#39](https://github.com/nelvko/clash-for-linux-install/issues/39)
+- 没有订阅？[click me](https://次元.net/auth/register?code=oUbI)
+- 验证是否连通外网：`wget www.google.com`
 
-- 需要 `root` 或 `sudo` 权限。
-- 具备 `bash` 和 `systemd` 的系统环境。
+## 一、标准环境安装与使用
 
-### 一键安装
+### 1. 环境要求
+
+- 需要 `root` 或 `sudo` 权限
+- 具备 `bash` 和 `systemd` 的系统环境
+
+### 2. 一键安装
 
 下述命令适用于 `x86_64` 架构，其他架构请戳：[一键安装-多架构](https://github.com/nelvko/clash-for-linux-install/wiki#%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85-%E5%A4%9A%E6%9E%B6%E6%9E%84)
 
@@ -23,14 +31,7 @@ git clone --branch master --depth 1 https://gh-proxy.com/https://github.com/nelv
   && sudo bash -c '. install.sh; exec bash'
 ```
 
-> 如遇问题，请在查阅[常见问题](https://github.com/nelvko/clash-for-linux-install/wiki/FAQ)及 [issue](https://github.com/nelvko/clash-for-linux-install/issues?q=is%3Aissue) 未果后进行反馈。
-
-- 上述克隆命令使用了[加速前缀](https://gh-proxy.com/)，如失效请更换其他[可用链接](https://ghproxy.link/)。
-- 默认通过远程订阅获取配置进行安装，本地配置安装详见：[issue#39](https://github.com/nelvko/clash-for-linux-install/issues/39)
-- 没有订阅？[click me](https://次元.net/auth/register?code=oUbI)
-- 验证是否连通外网：`wget www.google.com`
-
-### 命令一览
+### 3. 命令一览
 
 执行 `clash` 列出开箱即用的快捷命令。
 
@@ -48,7 +49,7 @@ Usage:
     clashupdate  [auto|log]  更新订阅
 ```
 
-### 开始使用
+### 4. 开始使用
 
 ```bash
 $ clashoff
@@ -66,7 +67,7 @@ $ clashui
 - 使用 `systemctl` 控制 `clash` 启停，并调整代理环境变量的值（http_proxy 等）。应用程序在发起网络请求时，会通过其指定的代理地址转发流量，不调整会造成：关闭代理但未卸载代理变量导致仍转发请求、开启代理后未设置代理地址导致请求不转发。
 - `clashon` 等命令封装了上述流程。
 
-### 定时更新订阅
+### 5. 定时更新订阅
 
 ```bash
 $ clashupdate https://example.com
@@ -86,7 +87,7 @@ $ clashupdate log
 - 可通过 `crontab -e` 修改定时更新频率及订阅链接。
 - 通过配置文件进行更新：[pr#24](https://github.com/nelvko/clash-for-linux-install/pull/24#issuecomment-2565054701)
 
-### Web 控制台密钥
+### 6. Web 控制台密钥
 
 控制台密钥默认为空，若暴露到公网使用建议更新密钥。
 
@@ -98,7 +99,7 @@ $ clashsecret
 😼 当前密钥：666
 ```
 
-### `Tun` 模式
+### 7. `Tun` 模式
 
 ```bash
 $ clashtun
@@ -111,7 +112,7 @@ $ clashtun on
 - 作用：实现本机及 `Docker` 等容器的所有流量路由到 `clash` 代理、DNS 劫持等。
 - 原理：[clash-verge-rev](https://www.clashverge.dev/guide/term.html#tun)、 [clash.wiki](https://clash.wiki/premium/tun-device.html)。
 
-### `Mixin` 配置
+### 8. `Mixin` 配置
 
 ```bash
 $ clashmixin
@@ -128,12 +129,105 @@ $ clashmixin -r
 - 运行时配置是订阅配置和 `Mixin` 配置的并集。
 - 相同配置项优先级：`Mixin` 配置 > 订阅配置。
 
-### 卸载
+### 9. 卸载
 
 以下为通用命令，`root` 用户可直接使用： `. uninstall.sh`。
 
 ```bash
 sudo bash -c '. uninstall.sh; exec bash'
+```
+
+## 二、Docker环境安装与使用
+
+### 1. 环境要求
+
+- 需要 `root` 或类似权限
+- 仅需 `bash`，**无需 systemd**
+- 适用于各种容器环境，如Docker、LXC等
+
+### 2. 一键安装
+
+在Docker容器中，无需systemd也能安装使用Clash：
+
+```bash
+git clone --branch master --depth 1 https://gh-proxy.com/https://github.com/SongJunguo/clash_for_linux_or_docker.git \
+  && cd clash_for_linux_or_docker \
+  && bash -c '. install.sh; exec bash'
+```
+
+安装流程会自动检测Docker环境，并使用适合容器的方式安装Clash。
+
+### 3. 关键命令
+
+Docker环境中使用以下命令管理Clash：
+
+```bash
+# 启动Clash并设置代理环境变量
+source /opt/clash/start_clash.sh
+
+# 停止Clash并清除代理环境变量
+source /opt/clash/stop_clash.sh
+
+# 更新配置文件
+/opt/clash/update_config.sh [订阅链接]
+```
+
+### 4. 使用特点
+
+Docker环境下的Clash在`/opt/clash`目录中安装，主要特点：
+
+- **无需systemd**：使用脚本和PID文件方式管理进程
+- **自动识别环境**：安装脚本会自动检测是否为Docker环境
+- **便捷启停**：使用source命令确保环境变量正确设置
+- **Web控制台**：默认地址`http://127.0.0.1:9000/ui`
+
+容器重启注意事项：
+- 每次容器启动后需要手动执行：`source /opt/clash/start_clash.sh`
+- 可以将此命令添加到容器的启动脚本中自动执行
+
+### 5. 配置文件结构
+
+Docker环境中的配置文件：
+
+- 主配置文件：`/opt/clash/config.yaml`
+- Mixin配置文件：`/opt/clash/mixin.yaml`
+- 运行时配置：`/opt/clash/runtime.yaml`
+
+### 6. 更新订阅
+
+在Docker环境中使用专门的更新脚本：
+
+```bash
+# 使用新的订阅链接更新
+/opt/clash/update_config.sh https://example.com
+
+# 使用之前保存的链接更新
+/opt/clash/update_config.sh
+
+# 更新后重启Clash
+source /opt/clash/stop_clash.sh
+source /opt/clash/start_clash.sh
+```
+
+### 7. 端口映射
+
+如需从容器外部访问Web控制台，请确保映射以下端口：
+
+- 9000端口：Web控制台
+- 7890端口：HTTP代理
+- 7891端口：SOCKS代理
+
+例如Docker运行命令：
+```bash
+docker run -p 7890:7890 -p 7891:7891 -p 9000:9000 -d your-container-image
+```
+
+### 8. 卸载
+
+Docker环境中使用以下命令卸载：
+
+```bash
+bash -c '. uninstall.sh; exec bash'
 ```
 
 ## 引用
@@ -149,7 +243,7 @@ sudo bash -c '. uninstall.sh; exec bash'
 ## Thanks
 
 [@鑫哥](https://github.com/TrackRay)
-
+[@nelvko](https://github.com/nelvko/clash-for-linux-install)
 ## 特别声明
 
 1. 编写本项目主要目的为学习和研究 `Shell` 编程，不得将本项目中任何内容用于违反国家/地区/组织等的法律法规或相关规定的其他用途。
