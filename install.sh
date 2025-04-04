@@ -187,6 +187,12 @@ source /opt/clash/stop_clash.sh
 \`\`\`
 这将停止 Clash 服务并清除代理环境变量。
 
+### 更新订阅配置
+\`\`\`bash
+/opt/clash/update_config.sh [订阅链接]
+\`\`\`
+如果不提供链接，将使用上次保存的链接更新。
+
 ## Web 控制台
 
 Clash Web 控制台地址：\`http://127.0.0.1:9090/ui\`
@@ -229,10 +235,8 @@ EOF
     # 给脚本添加执行权限
     chmod +x "$CLASH_BASE_DIR/start_clash.sh" "$CLASH_BASE_DIR/stop_clash.sh"
     
-    # 创建更新配置脚本并添加执行权限
-    cp docker_update_config.sh "$CLASH_BASE_DIR/update_config.sh" 2>/dev/null || {
-        # 如果直接复制失败，就创建新文件
-        cat <<'EOF' > "$CLASH_BASE_DIR/update_config.sh"
+    # 创建更新配置脚本
+    cat <<'EOF' > "$CLASH_BASE_DIR/update_config.sh"
 #!/bin/bash
 
 CLASH_BASE_DIR='/opt/clash'
@@ -346,7 +350,6 @@ update_config() {
 # 执行更新
 update_config "$1"
 EOF
-    }
     chmod +x "$CLASH_BASE_DIR/update_config.sh"
 
     # 更新bashrc

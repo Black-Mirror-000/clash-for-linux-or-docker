@@ -3,3 +3,5 @@
 config.yaml
 resources/bin/**
 !.gitkeep
+
+push_to_github.sh

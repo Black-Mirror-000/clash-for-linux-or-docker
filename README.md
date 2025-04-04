@@ -168,9 +168,14 @@ source /opt/clash/start_clash.sh
 # 停止Clash并清除代理环境变量
 source /opt/clash/stop_clash.sh
 
+# 在新终端窗口中设置代理环境变量
+source /opt/clash/set_proxy.sh
+
 # 更新配置文件
 /opt/clash/update_config.sh [订阅链接]
 ```
+
+**重要说明**：在Docker环境中，每次打开新的终端窗口，环境变量不会自动保留，需要手动运行 `source /opt/clash/set_proxy.sh` 来设置代理环境变量，否则新终端将无法使用代理连接外网。
 
 ### 4. 使用特点
 
@@ -180,10 +185,12 @@ Docker环境下的Clash在`/opt/clash`目录中安装，主要特点：
 - **自动识别环境**：安装脚本会自动检测是否为Docker环境
 - **便捷启停**：使用source命令确保环境变量正确设置
 - **Web控制台**：默认地址`http://127.0.0.1:9000/ui`
+- **新会话支持**：使用`set_proxy.sh`脚本在新终端窗口中快速设置代理环境变量
 
 容器重启注意事项：
 - 每次容器启动后需要手动执行：`source /opt/clash/start_clash.sh`
-- 可以将此命令添加到容器的启动脚本中自动执行
+- 每次打开新终端窗口需要执行：`source /opt/clash/set_proxy.sh`
+- 可以将启动命令添加到容器的启动脚本中自动执行
 
 ### 5. 配置文件结构
 
@@ -199,7 +206,7 @@ Docker环境中的配置文件：
 
 ```bash
 # 使用新的订阅链接更新
-/opt/clash/update_config.sh https://example.com
+/opt/clash/update_config.sh https://5ca0cc9b-6fb5-3054-8463-22992d190605.nginx24zfd.xyz/link/3V2cBMVKr3jvZsHw?clash=1
 
 # 使用之前保存的链接更新
 /opt/clash/update_config.sh
